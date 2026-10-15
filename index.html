@@ -354,6 +354,7 @@ tbody tr:hover{background:var(--bg-card)}
 .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--accent)}
 .form-row select option{background:var(--bg-panel)}
 .form-row textarea{resize:vertical;min-height:64px;line-height:1.5}
+.form-section-divider{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;padding:14px 0 4px;border-top:1px solid var(--border);margin-top:8px}
 </style>
 
 <!-- TOPBAR -->
@@ -1248,11 +1249,18 @@ function openEncDetail(id){
       <button class="btn-sm btn-edit" onclick="openEditModal('encomendas',${enc.id})">Editar</button>
       <button class="btn-sm btn-danger" onclick="confirmDelete('encomendas',${enc.id})">Eliminar</button>
     </div>
-    ${sec('Decoração',decs.map(d=>`<div class="dp-item" onclick="openDecDetail(${d.id})">
-      <span class="dp-item-ref td-link-accent">${d.artigo||'—'}</span>
-      <span class="dp-item-desc">${d.decoracao||''}</span>
-      ${pill(d.estado)}
-    </div>`),'Sem decoração.')}
+    ${sec('Artigos',arts.map(a=>`<div class="dp-item" onclick="openArtigoDetail(${a.id})">
+      <span class="dp-item-ref td-link-accent">${a.nome||a.referencia||'—'}</span>
+      <span class="dp-item-desc">${[a.tipo,a.cor,a.tamanhos].filter(Boolean).join(' · ')}</span>
+      ${a.quantidade?`<span style="font-size:11px;color:var(--fg-3);margin-left:auto">${a.quantidade} un.</span>`:''}
+    </div>`),`<button class="btn-sm btn-edit" onclick="event.stopPropagation();openModalForEnc('art',${id})">+ Adicionar artigo</button>`)}
+    ${sec('Decoração',decs.map(d=>{
+      const art=cache.artigos.find(a=>a.id===d.artigo_id);
+      return `<div class="dp-item" onclick="openDecDetail(${d.id})">
+        <span class="dp-item-ref td-link-accent">${d.tecnica||'—'}</span>
+        <span class="dp-item-desc">${art?art.nome||art.referencia||'—':'—'}</span>
+        ${pill(d.estado)}
+      </div>`;}),'Sem decoração.')}
     ${sec('Etiquetas',etqs.map(e=>`<div class="dp-item" onclick="openEtqDetail(${e.id})">
       <span class="dp-item-ref td-link-accent">${e.referencia||'—'}</span>
       <span class="dp-item-desc">${e.tipo||''}</span>
@@ -1273,11 +1281,6 @@ function openEncDetail(id){
       <span class="dp-item-desc">${a.descricao||''}</span>
       ${pill(a.estado)}
     </div>`),''):''}
-    ${sec('Artigos',arts.map(a=>`<div class="dp-item" onclick="openArtigoDetail(${a.id})">
-      <span class="dp-item-ref td-link-accent">${a.nome||a.referencia||'—'}</span>
-      <span class="dp-item-desc">${[a.tipo,a.cor,a.tamanhos].filter(Boolean).join(' · ')}</span>
-      ${a.quantidade?`<span style="font-size:11px;color:var(--fg-3);margin-left:auto">${a.quantidade} un.</span>`:''}
-    </div>`),`Sem artigos. <button class="btn-sm btn-edit" style="margin-left:4px" onclick="event.stopPropagation();openModalForEnc('art',${id})">+ Adicionar</button>`)}
   `);
 }
 
@@ -1494,17 +1497,30 @@ function openModal(type,data){
     title.textContent=isEdit?'Editar Artigo':'Novo Artigo';
     const tipoOpts=['Hoodie','Sweatshirt','T-Shirt','Polo','Calças','Jogger','Calções','Casaco','Gola']
       .map(t=>`<option value="${t}" ${data?.tipo===t?'selected':''}>${t}</option>`).join('');
+    const decSugs=[...new Set([...cache.decoracao.map(d=>d.tecnica).filter(Boolean),
+      'Bordado','Estampado','Jacquard','Aplicação','Transfer','Laser','Serigrafia','DTF','Flock'])];
+    const decEstOpts=['bloqueado','aguarda','preparacao','aprovado','enviado','env_aprovacao','arquivo']
+      .map(s=>`<option value="${s}" ${s==='aguarda'?'selected':''}>${STATE_LABEL[s]}</option>`).join('');
     html=sel('encomenda_id','Encomenda',encOpts)
       +f('nome','Nome',data?.nome)
       +`<div class="form-row"><label>Tipo</label><select name="tipo"><option value="">— Seleccionar —</option>${tipoOpts}</select></div>`
       +f('cor','Cor',data?.cor)
       +f('tamanhos','Tamanhos',data?.tamanhos,'text','placeholder="ex: XS,S,M,L,XL,XXL"')
       +f('quantidade','Quantidade total',data?.quantidade,'number')
-      +f('decoracao','Decoração',data?.decoracao)
       +f('etiquetas','Etiquetas',data?.etiquetas)
       +f('labdips','Labdips',data?.labdips)
       +f('acessorios','Acessórios',data?.acessorios)
-      +ta('notas','Notas',data?.notas);
+      +ta('notas','Notas',data?.notas)
+      +`<div class="form-section-divider">Decoração</div>`
+      +`<div class="form-row"><label>Técnica</label><input type="text" name="dec_tecnica" value="${data?.dec_tecnica||''}" list="dec-sugs-art" placeholder="ex: Bordado, DTF…"><datalist id="dec-sugs-art">${decSugs.map(s=>`<option value="${s}">`).join('')}</datalist></div>`
+      +f('dec_posicao','Posição',data?.dec_posicao,'text','placeholder="ex: Frente centro"')
+      +f('dec_largura_cm','Largura (cm)',data?.dec_largura_cm,'number')
+      +f('dec_altura_cm','Altura (cm)',data?.dec_altura_cm,'number')
+      +f('dec_artwork','Artwork',data?.dec_artwork)
+      +f('dec_origem','Origem',data?.dec_origem)
+      +f('dec_fornecedor','Fornecedor',data?.dec_fornecedor)
+      +`<div class="form-row"><label>Estado decoração</label><select name="dec_estado">${decEstOpts}</select></div>`
+      +ta('dec_notas','Notas decoração',data?.dec_notas);
   }
 
   body.innerHTML=html;
@@ -1542,7 +1558,25 @@ async function saveModal(){
     if(editId && editTable){
       await sb(editTable,{method:'PATCH',filter:`id=eq.${editId}`,body:data});
     } else if(editTable){
-      await sb(editTable,{method:'POST',body:data});
+      const res=await sb(editTable,{method:'POST',body:data,returning:true});
+      // Auto-create decoração when saving a new artigo with dec_tecnica filled
+      if(editTable==='artigos' && data.dec_tecnica){
+        const newArt=Array.isArray(res)?res[0]:res;
+        const decData={
+          encomenda_id:data.encomenda_id||null,
+          artigo_id:newArt?.id||null,
+          tecnica:data.dec_tecnica||null,
+          posicao:data.dec_posicao||null,
+          largura_cm:data.dec_largura_cm?parseFloat(data.dec_largura_cm):null,
+          altura_cm:data.dec_altura_cm?parseFloat(data.dec_altura_cm):null,
+          artwork:data.dec_artwork||null,
+          origem:data.dec_origem||null,
+          fornecedor:data.dec_fornecedor||null,
+          estado:data.dec_estado||'aguarda',
+          notas:data.dec_notas||null,
+        };
+        await sb('decoracao',{method:'POST',body:decData});
+      }
     }
     closeModal();
     await loadAll();
