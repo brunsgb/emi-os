@@ -1518,9 +1518,11 @@ function openModal(type,data){
       .map(t=>`<option value="${t}" ${data?.tipo===t?'selected':''}>${t}</option>`).join('');
     const decSugs=[...new Set([...cache.decoracao.map(d=>d.tecnica).filter(Boolean),
       'Bordado','Estampado','Jacquard','Aplicação','Transfer','Laser','Serigrafia','DTF','Flock'])];
+    const decEstVal=data?.dec_estado||'aguarda';
     const decEstOpts=['bloqueado','aguarda','preparacao','aprovado','enviado','env_aprovacao','arquivo']
-      .map(s=>`<option value="${s}" ${s==='aguarda'?'selected':''}>${STATE_LABEL[s]}</option>`).join('');
-    html=sel('encomenda_id','Encomenda',encOpts)
+      .map(s=>`<option value="${s}" ${s===decEstVal?'selected':''}>${STATE_LABEL[s]}</option>`).join('');
+    html=`<input type="hidden" name="_dec_id" value="${data?._dec_id||''}">`
+      +sel('encomenda_id','Encomenda',encOpts)
       +f('nome','Nome',data?.nome)
       +`<div class="form-row"><label>Tipo</label><select name="tipo"><option value="">— Seleccionar —</option>${tipoOpts}</select></div>`
       +f('cor','Cor',data?.cor)
@@ -1574,11 +1576,37 @@ async function saveModal(){
   const orig=btn.textContent;
   btn.disabled=true; btn.textContent='A guardar…';
   try{
-    // Separate dec_* fields from artigo fields
+    // Separate dec_* and _dec_id fields from artigo fields
     const decFields={};
-    Object.keys(data).forEach(k=>{if(k.startsWith('dec_')){decFields[k]=data[k];delete data[k];}});
+    let existingDecId=null;
+    Object.keys(data).forEach(k=>{
+      if(k==='_dec_id'){existingDecId=data[k]?parseInt(data[k]):null;delete data[k];}
+      else if(k.startsWith('dec_')){decFields[k]=data[k];delete data[k];}
+    });
+
     if(editId && editTable){
       await sb(editTable,{method:'PATCH',filter:`id=eq.${editId}`,body:data});
+      // Update or create linked decoração when editing artigo
+      if(editTable==='artigos' && decFields.dec_tecnica){
+        const decData={
+          encomenda_id:data.encomenda_id||null,
+          artigo_id:editId,
+          tecnica:decFields.dec_tecnica||null,
+          posicao:decFields.dec_posicao||null,
+          largura_cm:decFields.dec_largura_cm?parseFloat(decFields.dec_largura_cm):null,
+          altura_cm:decFields.dec_altura_cm?parseFloat(decFields.dec_altura_cm):null,
+          artwork:decFields.dec_artwork||null,
+          origem:decFields.dec_origem||null,
+          fornecedor:decFields.dec_fornecedor||null,
+          estado:decFields.dec_estado||'aguarda',
+          notas:decFields.dec_notas||null,
+        };
+        if(existingDecId){
+          await sb('decoracao',{method:'PATCH',filter:`id=eq.${existingDecId}`,body:decData});
+        } else {
+          await sb('decoracao',{method:'POST',body:decData});
+        }
+      }
     } else if(editTable){
       const res=await sb(editTable,{method:'POST',body:data});
       // Auto-create decoração when saving a new artigo with dec_tecnica filled
