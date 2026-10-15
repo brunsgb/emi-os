@@ -1140,7 +1140,7 @@ function renderArtigos(filter='todos'){
         const enc=cache.encomendas.find(x=>x.id===a.encomenda_id);
         return `<tr onclick="openArtigoDetail(${a.id})">
           <td class="td-link">${a.nome||a.referencia||'—'}</td>
-          <td class="td-mono td-link-accent" onclick="event.stopPropagation();if(${enc?enc.id:0})openEncDetail(${enc?enc.id:0})">${enc?enc.numero:'—'}</td>
+          <td class="td-mono td-link-accent" onclick="event.stopPropagation();if(${enc?enc.id:0})openEncDetail(${enc?enc.id:0})">${enc?(enc.numero||clienteName(enc.cliente_id)||'—'):'—'}</td>
           <td class="td-dimmed">${a.tipo||'—'}</td>
           <td class="td-dimmed">${a.cor||'—'}</td>
           <td class="td-dimmed">${a.quantidade||'—'}</td>
