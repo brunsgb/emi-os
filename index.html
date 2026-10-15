@@ -1324,6 +1324,10 @@ function openDecDetail(id){
       <div class="kv"><span class="kv-k">Posição</span><span class="kv-v">${d.posicao||'—'}</span></div>
       <div class="kv"><span class="kv-k">Largura</span><span class="kv-v">${d.largura_cm?d.largura_cm+' cm':'—'}</span></div>
       <div class="kv"><span class="kv-k">Altura</span><span class="kv-v">${d.altura_cm?d.altura_cm+' cm':'—'}</span></div>
+      ${(()=>{const art=cache.artigos.find(a=>a.id===d.artigo_id);return art?`<div class="kv"><span class="kv-k">Artigo</span><span class="kv-v td-link-accent" onclick="openArtigoDetail(${art.id})">${art.nome||art.referencia||'—'}</span></div>`:'';})()}
+      ${d.artwork?`<div class="kv"><span class="kv-k">Artwork</span><span class="kv-v">${d.artwork}</span></div>`:''}
+      ${d.origem?`<div class="kv"><span class="kv-k">Origem</span><span class="kv-v">${d.origem}</span></div>`:''}
+      ${d.fornecedor?`<div class="kv"><span class="kv-k">Fornecedor</span><span class="kv-v">${d.fornecedor}</span></div>`:''}
       ${d.notas?`<div class="kv kv-full"><span class="kv-k">Notas</span><span class="kv-v">${d.notas}</span></div>`:''}
     </div>
     <div class="dp-actions">
