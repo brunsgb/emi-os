@@ -1555,25 +1555,28 @@ async function saveModal(){
   const orig=btn.textContent;
   btn.disabled=true; btn.textContent='A guardar…';
   try{
+    // Separate dec_* fields from artigo fields
+    const decFields={};
+    Object.keys(data).forEach(k=>{if(k.startsWith('dec_')){decFields[k]=data[k];delete data[k];}});
     if(editId && editTable){
       await sb(editTable,{method:'PATCH',filter:`id=eq.${editId}`,body:data});
     } else if(editTable){
-      const res=await sb(editTable,{method:'POST',body:data,returning:true});
+      const res=await sb(editTable,{method:'POST',body:data});
       // Auto-create decoração when saving a new artigo with dec_tecnica filled
-      if(editTable==='artigos' && data.dec_tecnica){
+      if(editTable==='artigos' && decFields.dec_tecnica){
         const newArt=Array.isArray(res)?res[0]:res;
         const decData={
           encomenda_id:data.encomenda_id||null,
           artigo_id:newArt?.id||null,
-          tecnica:data.dec_tecnica||null,
-          posicao:data.dec_posicao||null,
-          largura_cm:data.dec_largura_cm?parseFloat(data.dec_largura_cm):null,
-          altura_cm:data.dec_altura_cm?parseFloat(data.dec_altura_cm):null,
-          artwork:data.dec_artwork||null,
-          origem:data.dec_origem||null,
-          fornecedor:data.dec_fornecedor||null,
-          estado:data.dec_estado||'aguarda',
-          notas:data.dec_notas||null,
+          tecnica:decFields.dec_tecnica||null,
+          posicao:decFields.dec_posicao||null,
+          largura_cm:decFields.dec_largura_cm?parseFloat(decFields.dec_largura_cm):null,
+          altura_cm:decFields.dec_altura_cm?parseFloat(decFields.dec_altura_cm):null,
+          artwork:decFields.dec_artwork||null,
+          origem:decFields.dec_origem||null,
+          fornecedor:decFields.dec_fornecedor||null,
+          estado:decFields.dec_estado||'aguarda',
+          notas:decFields.dec_notas||null,
         };
         await sb('decoracao',{method:'POST',body:decData});
       }
