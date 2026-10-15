@@ -1414,7 +1414,26 @@ function openEditModal(table,id){
     tingimentos:cache.tingimentos,acessorios:cache.acessorios,artigos:cache.artigos};
   const r=(maps[table]||[]).find(x=>x.id===id);
   editTable=table; editId=id;
-  openModal(typeMap[table]||table,r);
+  // For artigos, merge linked decoração fields
+  if(table==='artigos'){
+    const dec=cache.decoracao.find(d=>d.artigo_id===id);
+    const merged=Object.assign({},r);
+    if(dec){
+      merged._dec_id=dec.id;
+      merged.dec_tecnica=dec.tecnica;
+      merged.dec_posicao=dec.posicao;
+      merged.dec_largura_cm=dec.largura_cm;
+      merged.dec_altura_cm=dec.altura_cm;
+      merged.dec_artwork=dec.artwork;
+      merged.dec_origem=dec.origem;
+      merged.dec_fornecedor=dec.fornecedor;
+      merged.dec_estado=dec.estado;
+      merged.dec_notas=dec.notas;
+    }
+    openModal('art',merged);
+  } else {
+    openModal(typeMap[table]||table,r);
+  }
 }
 
 function openModal(type,data){
