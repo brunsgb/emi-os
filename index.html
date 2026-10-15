@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Emibritex OS</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
@@ -25,6 +24,7 @@
   --s-aprov:   #2e7d32; --s-aprov-bg:  #e6f4e7;
   --s-env:     #1565c0; --s-env-bg:    #e3eeff;
   --s-arq:     #607d8b; --s-arq-bg:    #eceff1;
+  --s-envap:   #7b1fa2; --s-envap-bg:  #f3e5f5;
   /* semantic */
   --red:       #c0392b; --red-bg:      #fde8e6;
   --orange:    #d4700a; --orange-bg:   #fef0e0;
@@ -58,6 +58,7 @@
     --s-aprov:#81c784;--s-aprov-bg:rgba(129,199,132,.18);
     --s-env:#64b5f6;--s-env-bg:rgba(100,181,246,.18);
     --s-arq:#90a4ae;--s-arq-bg:rgba(144,164,174,.18);
+    --s-envap:#ce93d8;--s-envap-bg:rgba(206,147,216,.18);
     --red:#e57373;--red-bg:rgba(229,115,115,.18);
     --orange:#ffb74d;--orange-bg:rgba(255,183,77,.18);
     --yellow:#ffd54f;--yellow-bg:rgba(255,213,79,.18);
@@ -82,6 +83,7 @@
   --s-aprov:#81c784;--s-aprov-bg:rgba(129,199,132,.18);
   --s-env:#64b5f6;--s-env-bg:rgba(100,181,246,.18);
   --s-arq:#90a4ae;--s-arq-bg:rgba(144,164,174,.18);
+  --s-envap:#ce93d8;--s-envap-bg:rgba(206,147,216,.18);
   --red:#e57373;--red-bg:rgba(229,115,115,.18);
   --orange:#ffb74d;--orange-bg:rgba(255,183,77,.18);
   --yellow:#ffd54f;--yellow-bg:rgba(255,213,79,.18);
@@ -117,7 +119,7 @@ body{font-family:var(--font-ui);font-size:13px;background:var(--bg);color:var(--
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* APP BODY */
-.app-body{display:flex;flex:1;overflow:hidden;min-height:0}
+.app-body{display:flex;flex:1;min-height:0;overflow:hidden}
 
 /* SIDEBAR */
 .sidebar{width:var(--sidebar-w);background:var(--bg-panel);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:8px 0 16px}
@@ -133,9 +135,8 @@ body{font-family:var(--font-ui);font-size:13px;background:var(--bg);color:var(--
 .sidebar-item.active .sidebar-badge{background:var(--accent-bg);color:var(--accent)}
 
 /* MAIN */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0}
-.view{display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0}.view.active{display:flex;overflow-y:auto}
-.view.active{display:flex}
+.main{flex:1;display:flex;flex-direction:column;position:relative;min-height:0;overflow:hidden}
+.view{display:none;flex-direction:column;flex:1;min-height:0}.view.active{display:flex;overflow-y:auto}
 
 /* PAGE HEADER */
 .page-header{padding:18px 24px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0;background:var(--bg-panel)}
@@ -150,7 +151,7 @@ body{font-family:var(--font-ui);font-size:13px;background:var(--bg);color:var(--
 .tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
 
 /* CONTENT */
-.content-area{flex:1;overflow-y:auto;padding:20px 24px}
+.content-area{flex:1;overflow-y:auto;padding:20px 24px;min-height:0}
 
 /* FILTER BAR */
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
@@ -188,6 +189,8 @@ tbody tr:hover{background:var(--bg-card)}
 .pill.enviado .pill-dot{background:var(--s-env)}
 .pill.arquivo{background:var(--s-arq-bg);color:var(--s-arq)}
 .pill.arquivo .pill-dot{background:var(--s-arq)}
+.pill.env_aprovacao{background:var(--s-envap-bg);color:var(--s-envap)}
+.pill.env_aprovacao .pill-dot{background:var(--s-envap)}
 
 /* CARDS GRID */
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
@@ -388,6 +391,11 @@ tbody tr:hover{background:var(--bg-card)}
     <div class="sidebar-divider"></div>
     <div class="sidebar-section">
       <div class="sidebar-section-title">Produção</div>
+      <div class="sidebar-item" onclick="showView('artigos',this)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M5 5h6M5 11h4"/></svg>
+        Artigos
+        <span class="sidebar-badge" id="badge-art">—</span>
+      </div>
       <div class="sidebar-item" onclick="showView('decoracao',this)">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14l3-3 8-8-3-3-8 8-3 3 3 3zm7-11l3 3"/></svg>
         Decoração
@@ -617,6 +625,31 @@ tbody tr:hover{background:var(--bg-card)}
       </div>
     </div>
 
+    <!-- ARTIGOS -->
+    <div class="view" id="view-artigos">
+      <div class="page-header">
+        <div class="page-title">Artigos</div>
+        <div class="page-header-actions">
+          <button class="topbar-btn primary" onclick="openModal('art')">+ Novo artigo</button>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active" onclick="filterArtigos('todos',this)">Todos</div>
+        <div class="tab" onclick="filterArtigos('Hoodie',this)">Hoodie</div>
+        <div class="tab" onclick="filterArtigos('Sweatshirt',this)">Sweatshirt</div>
+        <div class="tab" onclick="filterArtigos('T-Shirt',this)">T-Shirt</div>
+        <div class="tab" onclick="filterArtigos('Polo',this)">Polo</div>
+      </div>
+      <div class="content-area">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>Encomenda</th><th>Tipo</th><th>Cor</th><th>Qtd.</th><th>Tamanhos</th><th>Notas</th></tr></thead>
+            <tbody id="art-tbody"><tr><td colspan="7" class="loading-row">A carregar...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- CLIENTES -->
     <div class="view" id="view-clientes">
       <div class="page-header">
@@ -713,7 +746,7 @@ function setStatus(s,t){
 const STATE_LABEL = {
   bloqueado:'Bloqueado', aguarda:'Aguarda resposta',
   preparacao:'Em preparação', aprovado:'Aprovado',
-  enviado:'Enviado fornecedor', arquivo:'Arquivo'
+  enviado:'Enviado fornecedor', env_aprovacao:'Enviado para aprovação', arquivo:'Arquivo'
 };
 function pill(estado){
   const cls=estado||'arquivo';
@@ -769,9 +802,13 @@ function renderAll(){
   renderLabdips('todas');
   renderTingimentos('todas');
   renderAcessorios('todas');
+  renderArtigos('todos');
   renderClientes();
   renderFornecedores();
   renderTodo();
+  // badge
+  const artBadge=document.getElementById('badge-art');
+  if(artBadge) artBadge.textContent=cache.artigos.length||'—';
 }
 
 // ─── DASHBOARD ────────────────────────────────────────────────────────
@@ -922,7 +959,12 @@ function removeTodo(i){todos.splice(i,1);saveTodos();renderTodo();}
 let currentEncFilter='todas';
 function renderEncomendas(filter='todas'){
   currentEncFilter=filter;
-  let list=cache.encomendas;
+  let list=[...cache.encomendas].sort((a,b)=>{
+    // Sort by numeric part of numero desc, fallback to id desc
+    const na=parseInt((a.numero||'').replace(/\D/g,''))||a.id||0;
+    const nb=parseInt((b.numero||'').replace(/\D/g,''))||b.id||0;
+    return nb-na;
+  });
   if(filter==='activas') list=list.filter(e=>e.estado!=='arquivo');
   if(filter==='bloqueado') list=list.filter(e=>e.estado==='bloqueado');
   if(filter==='arquivo') list=list.filter(e=>e.estado==='arquivo');
@@ -1087,6 +1129,58 @@ function filterSimple(section,filter,el){
   else if(section==='aces') renderAcessorios(filter);
 }
 
+// ─── ARTIGOS ──────────────────────────────────────────────────────────
+let currentArtigoFilter='todos';
+function renderArtigos(filter='todos'){
+  currentArtigoFilter=filter;
+  let list=cache.artigos;
+  if(filter!=='todos') list=list.filter(a=>a.tipo===filter);
+  document.getElementById('art-tbody').innerHTML=list.length
+    ? list.map(a=>{
+        const enc=cache.encomendas.find(x=>x.id===a.encomenda_id);
+        return `<tr onclick="openArtigoDetail(${a.id})">
+          <td class="td-link">${a.nome||a.referencia||'—'}</td>
+          <td class="td-mono td-link-accent" onclick="event.stopPropagation();if(${enc?enc.id:0})openEncDetail(${enc?enc.id:0})">${enc?enc.numero:'—'}</td>
+          <td class="td-dimmed">${a.tipo||'—'}</td>
+          <td class="td-dimmed">${a.cor||'—'}</td>
+          <td class="td-dimmed">${a.quantidade||'—'}</td>
+          <td class="td-dimmed" style="font-size:11px">${a.tamanhos||'—'}</td>
+          <td class="td-dimmed" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.notas||'—'}</td>
+        </tr>`;}).join('')
+    : '<tr><td colspan="7" class="empty">Sem artigos registados.</td></tr>';
+}
+function filterArtigos(f,el){
+  document.querySelectorAll('#view-artigos .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderArtigos(f);
+}
+
+function openArtigoDetail(id){
+  const a=cache.artigos.find(x=>x.id===id); if(!a) return;
+  const enc=cache.encomendas.find(e=>e.id===a.encomenda_id);
+  const cli=enc?cache.clientes.find(c=>c.id===enc.cliente_id):null;
+  document.getElementById('dp-enc').textContent=enc?enc.numero:'Artigo';
+  document.getElementById('dp-title').textContent=a.nome||a.referencia||'—';
+  openDetail(`
+    <div class="dp-kv-grid">
+      <div class="kv"><span class="kv-k">Tipo</span><span class="kv-v">${a.tipo||'—'}</span></div>
+      <div class="kv"><span class="kv-k">Cor</span><span class="kv-v">${a.cor||'—'}</span></div>
+      <div class="kv"><span class="kv-k">Quantidade</span><span class="kv-v">${a.quantidade||'—'}</span></div>
+      <div class="kv"><span class="kv-k">Tamanhos</span><span class="kv-v">${a.tamanhos||'—'}</span></div>
+      <div class="kv"><span class="kv-k">Encomenda</span><span class="kv-v td-link-accent" onclick="if(${enc?enc.id:0})openEncDetail(${enc?enc.id:0})">${enc?enc.numero:'—'}</span></div>
+      <div class="kv"><span class="kv-k">Cliente</span><span class="kv-v">${cli?cli.nome:'—'}</span></div>
+      ${a.decoracao?`<div class="kv"><span class="kv-k">Decoração</span><span class="kv-v">${a.decoracao}</span></div>`:''}
+      ${a.etiquetas?`<div class="kv"><span class="kv-k">Etiquetas</span><span class="kv-v">${a.etiquetas}</span></div>`:''}
+      ${a.labdips?`<div class="kv"><span class="kv-k">Labdips</span><span class="kv-v">${a.labdips}</span></div>`:''}
+      ${a.acessorios?`<div class="kv"><span class="kv-k">Acessórios</span><span class="kv-v">${a.acessorios}</span></div>`:''}
+      ${a.notas?`<div class="kv kv-full"><span class="kv-k">Notas</span><span class="kv-v">${a.notas}</span></div>`:''}
+    </div>
+    <div class="dp-actions">
+      <button class="btn-sm btn-edit" onclick="openEditModal('artigos',${a.id})">Editar</button>
+      <button class="btn-sm btn-danger" onclick="confirmDelete('artigos',${a.id})">Eliminar</button>
+    </div>`);
+}
+
 // ─── CLIENTES ─────────────────────────────────────────────────────────
 function renderClientes(){
   document.getElementById('cli-tbody').innerHTML=cache.clientes.length
@@ -1179,11 +1273,11 @@ function openEncDetail(id){
       <span class="dp-item-desc">${a.descricao||''}</span>
       ${pill(a.estado)}
     </div>`),''):''}
-    ${arts.length?sec('Artigos',arts.map(a=>`<div class="dp-item">
-      <span class="dp-item-ref">${a.referencia||'—'}</span>
-      <span class="dp-item-desc">${a.descricao||''}</span>
-      ${pill(a.estado)}
-    </div>`),''):''}
+    ${sec('Artigos',arts.map(a=>`<div class="dp-item" onclick="openArtigoDetail(${a.id})">
+      <span class="dp-item-ref td-link-accent">${a.nome||a.referencia||'—'}</span>
+      <span class="dp-item-desc">${[a.tipo,a.cor,a.tamanhos].filter(Boolean).join(' · ')}</span>
+      ${a.quantidade?`<span style="font-size:11px;color:var(--fg-3);margin-left:auto">${a.quantidade} un.</span>`:''}
+    </div>`),`Sem artigos. <button class="btn-sm btn-edit" style="margin-left:4px" onclick="event.stopPropagation();openModalForEnc('art',${id})">+ Adicionar</button>`)}
   `);
 }
 
@@ -1304,6 +1398,11 @@ function openGenDetail(table,id){
 // ─── MODAL FORMS ──────────────────────────────────────────────────────
 let editTable=null,editId=null;
 
+function openModalForEnc(type,encId){
+  editTable=null; editId=null;
+  openModal(type,{encomenda_id:encId});
+}
+
 function openEditModal(table,id){
   const typeMap={clientes:'cli',encomendas:'enc',decoracao:'dec',etiquetas:'etq',
     fornecedores:'forn',labdips:'lab',tingimentos:'ting',acessorios:'aces',artigos:'art'};
@@ -1326,7 +1425,7 @@ function openModal(type,data){
   const title=document.getElementById('modal-title');
   const body=document.getElementById('modal-body');
 
-  const stateOpts=['bloqueado','aguarda','preparacao','aprovado','enviado','arquivo']
+  const stateOpts=['bloqueado','aguarda','preparacao','aprovado','enviado','env_aprovacao','arquivo']
     .map(s=>`<option value="${s}" ${(data?.estado||'aguarda')===s?'selected':''}>${STATE_LABEL[s]}</option>`).join('');
   const cliOpts=cache.clientes.map(c=>`<option value="${c.id}" ${data?.cliente_id===c.id?'selected':''}>${c.nome}</option>`).join('');
   const encOpts=cache.encomendas.map(e=>{
@@ -1393,9 +1492,19 @@ function openModal(type,data){
       +f('quantidade','Quantidade',data?.quantidade)+ta('notas','Notas',data?.notas);
   } else if(type==='art'){
     title.textContent=isEdit?'Editar Artigo':'Novo Artigo';
-    html=sel('encomenda_id','Encomenda',encOpts)+f('referencia','Referência (auto se vazio)',data?.referencia)
-      +f('descricao','Descrição',data?.descricao)+f('quantidade','Quantidade',data?.quantidade)
-      +sel('estado','Estado',stateOpts)+ta('notas','Notas',data?.notas);
+    const tipoOpts=['Hoodie','Sweatshirt','T-Shirt','Polo','Calças','Jogger','Calções','Casaco','Gola']
+      .map(t=>`<option value="${t}" ${data?.tipo===t?'selected':''}>${t}</option>`).join('');
+    html=sel('encomenda_id','Encomenda',encOpts)
+      +f('nome','Nome',data?.nome)
+      +`<div class="form-row"><label>Tipo</label><select name="tipo"><option value="">— Seleccionar —</option>${tipoOpts}</select></div>`
+      +f('cor','Cor',data?.cor)
+      +f('tamanhos','Tamanhos',data?.tamanhos,'text','placeholder="ex: XS,S,M,L,XL,XXL"')
+      +f('quantidade','Quantidade total',data?.quantidade,'number')
+      +f('decoracao','Decoração',data?.decoracao)
+      +f('etiquetas','Etiquetas',data?.etiquetas)
+      +f('labdips','Labdips',data?.labdips)
+      +f('acessorios','Acessórios',data?.acessorios)
+      +ta('notas','Notas',data?.notas);
   }
 
   body.innerHTML=html;
@@ -1454,13 +1563,12 @@ async function confirmDelete(table,id){
 }
 
 // ─── NAVIGATION ───────────────────────────────────────────────────────
-function showView(id){
+function showView(id,el){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item,.nav-item').forEach(n=>n.classList.remove('active'));
   const view=document.getElementById('view-'+id);
   if(view) view.classList.add('active');
-  const nav=document.querySelector(`.nav-item[data-view="${id}"]`);
-  if(nav) nav.classList.add('active');
+  if(el) el.classList.add('active');
   // Close sidebar on mobile
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -1494,5 +1602,3 @@ document.addEventListener('DOMContentLoaded',async()=>{
   showView('dashboard');
 });
 </script>
-
-</body></html>
